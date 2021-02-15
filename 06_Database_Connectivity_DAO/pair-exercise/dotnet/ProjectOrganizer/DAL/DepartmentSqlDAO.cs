@@ -101,6 +101,7 @@ namespace ProjectOrganizer.DAL
         /// <param name="updatedDepartment">The department object.</param>
         /// <returns>True, if successful.</returns>
         public bool UpdateDepartment(Department updatedDepartment)
+
         {
             bool wasDepartmentUpdated = false;
             try

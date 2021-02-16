@@ -94,8 +94,9 @@ namespace ProjectOrganizer.DAL
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                employeeAssigned = false;
+                throw;
+                //Console.WriteLine(ex.Message);
+                //employeeAssigned = false;
             }
             return employeeAssigned;
         }

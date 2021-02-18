@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Capstone.Models
 {
-    public class Category_Venue
+    public class CategoryVenue
     {
         public int VenueId { get; set; }
         public int CategoryId { get; set; }

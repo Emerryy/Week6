@@ -34,7 +34,7 @@ namespace Capstone.DAL
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT name, id FROM venue ORDER BY name ASC;", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM venue ORDER BY name ASC;", conn);
 
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -57,9 +57,12 @@ namespace Capstone.DAL
         }
 
 
-        public IList<Venue> GetVenueInfoByID(int venueId)
+        public List<string> GetVenueInfoByID(int venueId)
         {
-            IList<Venue> venueList = new List<Venue>();
+            List<string> venueInfo = new List<string>();
+            Venue venue = new Venue();
+            City city = new City();
+            Category cat = new Category();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -73,8 +76,7 @@ namespace Capstone.DAL
 
                     while (reader.Read())
                     {
-                        Venue venue = ConvertReaderToVenue(reader);
-                        venueList.Add(venue);
+                        venue = ConvertReaderToVenue(reader);
                     }
                 }
             }
@@ -82,9 +84,8 @@ namespace Capstone.DAL
             {
                 Console.WriteLine("ERROR");
                 Console.WriteLine(ex.Message);
-
             }
-            return 0;
+            return venueInfo;
         }
 
         private Venue ConvertReaderToVenue(SqlDataReader reader)

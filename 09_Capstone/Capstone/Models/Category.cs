@@ -4,12 +4,9 @@ using System.Text;
 
 namespace Capstone.Models
 {
-    public class Venue
+    public class Category
     {
-        public int ID { get; set; }
+        public int CategoryId { get; set; }
         public string Name { get; set; }
-        public int CityID {get; set;}
-        public string Description { get; set; }
     }
 }
-

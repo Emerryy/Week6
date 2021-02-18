@@ -31,8 +31,8 @@ namespace Capstone
                 {
                     case "1":
                         string input = ListVenuesMenu();
+                        GetVenueInfo(int.Parse(input));
                         break;
-
                     case "Q":
                         Console.WriteLine("Thanks!");
                         done = true;
@@ -55,18 +55,21 @@ namespace Capstone
 
         public string ListVenuesMenu()
         {
-            
-
             IList<Venue> venues = venueDAO.GetVenuesInAlphaOrder();
 
             foreach(Venue item in venues)
             {
-                Console.WriteLine($"{item.Name} Venue ID- {item.ID} ");
+                Console.WriteLine($"{item.Name}".PadRight(35) +  $" Venue ID- {item.ID}".PadRight(4));
             }
             Console.WriteLine();
             Console.WriteLine("Please input the venue ID you'd like to view");
             return Console.ReadLine();
+        }
 
+        public string GetVenueInfo(int venueId)
+        {
+            Venue venue = venueDAO.GetVenueInfoByID(venueId);
+            return "";
         }
 
     }

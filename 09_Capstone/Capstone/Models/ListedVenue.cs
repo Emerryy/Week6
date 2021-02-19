@@ -14,10 +14,6 @@ namespace Capstone.Models
 
         public string StateName { get; set; }
 
-        public List<string> CategoryName { get;
-
-            set; 
-        }
-
+        public List<string> CategoryName { get; set; }
     }
 }

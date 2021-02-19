@@ -57,37 +57,6 @@ namespace Capstone.DAL
         }
 
 
-        //public List<string> GetVenueInfoByID(int venueId)
-        //{
-        //    List<string> venueInfo = new List<string>();
-        //    //Venue venue = new Venue();
-        //    //City city = new City();
-        //    //Category cat = new Category();
-        //    try
-        //    {
-        //        using (SqlConnection conn = new SqlConnection(connectionString))
-        //        {
-        //            conn.Open();
-
-        //            SqlCommand cmd = new SqlCommand(sqlGetVenueInfoById, conn);
-        //            cmd.Parameters.AddWithValue("@id", venueId);
-
-        //            SqlDataReader reader = cmd.ExecuteReader();
-
-        //            while (reader.Read())
-        //            {
-        //                venueInfo = ConvertReaderToVenue(reader);
-        //            }
-        //        }
-        //    }
-        //    catch (SqlException ex)
-        //    {
-        //        Console.WriteLine("ERROR");
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //    return venueInfo;
-        //}
-
         public List<ListedVenue> GetVenueInfoByID(int venueId)
         {
             List<ListedVenue> venueInfo = new List<ListedVenue>();

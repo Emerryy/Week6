@@ -55,48 +55,49 @@ namespace Capstone.DAL
             };
         }
 
-        public List<string> GetBookedDatesBySpaceId(int spaceId)
-        {
-            Reservation res = new Reservation();
+        //public List<string> GetBookedDatesBySpaceId(int spaceId)
+        //{
+        //    Reservation res = new Reservation();
 
-            DateTime firstDate;
-            DateTime lastDate;
+        //    DateTime firstDate;
+        //    DateTime lastDate;
 
-            List<string> datesBooked = new List<string>();
+        //    List<string> datesBooked = new List<string>();
 
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
+        //    try
+        //    {
+        //        using (SqlConnection conn = new SqlConnection(connectionString))
+        //        {
+        //            conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(sqlCheckBookedDates, conn);
-                    cmd.Parameters.AddWithValue("@spaceId", spaceId);
+        //            SqlCommand cmd = new SqlCommand(sqlCheckBookedDates, conn);
+                    
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+        //            SqlDataReader reader = cmd.ExecuteReader();
 
-                    while (reader.Read())
-                    {
-                        cmd.Parameters
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine("ERROR");
-                Console.WriteLine(ex.Message);
+        //            while (reader.Read())
+        //            {
+        //                cmd.Parameters.AddWithValue("@spaceId", spaceId);
+        //              //  cmd.Parameters.AddWithValue("")
+        //            }
+        //        }
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        Console.WriteLine("ERROR");
+        //        Console.WriteLine(ex.Message);
 
-            }
+        //    }
 
-            return venueSpaces;
+        //  //  return venueSpaces;
 
-            for (DateTime i = firstDate; i <= lastDate; i.AddDays(1))
-            {
-                datesBooked.Add(i.ToString("yyyy mm dd"));
-            }
-            return datesBooked;
+        //  //  for (DateTime i = firstDate; i <= lastDate; i.AddDays(1))
+        //    {
+        //        datesBooked.Add(i.ToString("yyyy mm dd"));
+        //    }
+        //    return datesBooked;
 
-        }
+        //}
 
         public Reservation ConvertReaderToReservation(SqlDataReader reader)
         {

@@ -221,14 +221,14 @@ namespace Capstone
             return numGuests;
         }
 
-        public IList<Space> CheckAndReturnAvailSpaces(int venueId, DateTime firstDay, int daysNeeded, int numGuests)
+        public IList<Space> CheckAndReturnAvailSpaces(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)
         {
             IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
-            DateTime endDate = firstDay.AddDays(daysNeeded);
+            DateTime endDate = reserveDate.AddDays(reserveDays);
             IList<Space> matchSpaces = new List<Space>();
 
             int endMonth = endDate.Month;
-            int startMonth = firstDay.Month;
+            int startMonth = reserveDate.Month;
 
             //IList<Reservation> existRes = resDAO.CheckExistingReservations();
             //foreach (Reservation res in existRes)
@@ -237,11 +237,11 @@ namespace Capstone
 
             foreach (Space space in spacesList)
             {
-                if (space.OpenFrom == -1 && numGuests <= space.MaxOccupancy)
+                if (space.OpenFrom == -1 && reserveGuests <= space.MaxOccupancy)
                 {
                     matchSpaces.Add(space);
                 }
-                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && numGuests <= space.MaxOccupancy)
+                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && reserveGuests <= space.MaxOccupancy)
                 {
                     matchSpaces.Add(space);
                 }
@@ -252,6 +252,19 @@ namespace Capstone
         public void GetSpaceInfoByVenue(int venueId)
         {
             Console.WriteLine();
+        }
+
+
+        public void DatesNeededForSpace(DateTime reserveDate, int reserveDays)
+        {
+            DateTime lastDate = reserveDate.AddDays(reserveDays);
+
+            List<DateTime> datesNeeded = new List<DateTime>();
+
+                for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            {
+                datesNeeded.Add(i);
+            }
         }
     }
 }

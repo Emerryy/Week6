@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Capstone.DAL
 {
-    class ReservationDAO
+    public class ReservationDAO
     {
         private string connectionString;
         public ReservationDAO(string connectionString)
@@ -14,7 +14,51 @@ namespace Capstone.DAL
             this.connectionString = connectionString;
         }
 
-        private Reservation ConvertReaderToReservation(SqlDataReader reader)
+
+        public void AddNewReservation()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("INSERT INTO reservation ", conn);
+                }
+            }
+
+            resDAO.ConvertReaderToReservation
+        }
+
+        public void CheckExistingReservations()
+        {
+            List<Reservation> existingReservations = new List<Reservation>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM reservation", conn);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Reservation res = ConvertReaderToReservation(reader);
+                        existingReservations.Add(res);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            return existingReservations;
+        }
+
+
+
+        public Reservation ConvertReaderToReservation(SqlDataReader reader)
         {
             Reservation reservation = new Reservation();
 

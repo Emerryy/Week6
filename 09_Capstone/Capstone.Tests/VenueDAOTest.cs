@@ -1,5 +1,6 @@
 using Capstone.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace Capstone.Tests
@@ -20,12 +21,13 @@ namespace Capstone.Tests
         }
 
         [TestMethod]
-        [DataRow("SELECT TOP 1 * FROM venue ORDER BY name ASC;", 6)]
-        [DataRow("SELECT TOP 1 * FROM venue ORDER BY name DESC;", 13)]
-        public void DoesReaderConvertToVenue(string sqlCommand, int expectedId)
+        [DataRow("SELECT TOP 1 * FROM venue ORDER BY name ASC;", 1)]
+        [DataRow("SELECT TOP 3 * FROM venue ORDER BY name DESC;", 3)]
+        public void DoesReaderConvertToVenue(string sqlCommand, int expectedRows)
         {
             //Arrange
-            Venue tempVenue = new Venue();
+            List<Venue> venuesList = new List<Venue>();
+            
 
             //Act
             try
@@ -38,15 +40,24 @@ namespace Capstone.Tests
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        tempVenue = venueDAO.ConvertReaderToVenue(reader);
+                        Venue tempVenue = venueDAO.ConvertReaderToVenue(reader);
+                        venuesList.Add(tempVenue);
                     }
                 }
             }
             catch (SqlException ex) { }
 
             //Assert
-            Assert.IsNotNull(tempVenue);
-            Assert.AreEqual(expectedId, tempVenue.ID);
+            Assert.IsNotNull(venuesList[0]);
+            Assert.AreEqual(expectedRows, venuesList.Count);
+        }
+
+
+        [TestMethod]
+        [DataRow(1)]
+        [DataRow(4)]
+        public void CanYouGetVenueInfoByID()
+        {
 
         }
     }

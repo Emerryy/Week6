@@ -14,5 +14,9 @@ namespace Capstone.Models
         public int OpenTo { get; set; }
         public decimal DailyRate { get; set; }
         public int MaxOccupancy { get; set; }
+
+
+
+
     }
 }

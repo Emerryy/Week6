@@ -35,8 +35,7 @@ namespace Capstone
                 switch (result.ToLower())
                 {
                     case "1":
-                        string venueIdInput = ListVenuesGetId();
-                        int venueId = int.Parse(venueIdInput);
+                        int venueId = ListVenuesGetId();
                         ListVenueById(venueId);
                         string viewOrReserveMenuInput = PrintViewOrReserveChoices();
                         ViewOrReserveSpaceMenu(viewOrReserveMenuInput, venueId);
@@ -55,13 +54,13 @@ namespace Capstone
         }
         public string DisplayMainMenu()
         {
-            Console.WriteLine("Welcome to Exscelsior Venues! Sorry if I spelled our own name wrong");
+            Console.WriteLine("Welcome to Exscelsior Venues!");
             Console.WriteLine("1) List Venues");
             Console.WriteLine("Q) Quit");
             return Console.ReadLine();
         }
 
-        public string ListVenuesGetId()
+        public int ListVenuesGetId()
         {
             IList<Venue> venues = venueDAO.GetVenuesInAlphaOrder();
 
@@ -71,7 +70,22 @@ namespace Capstone
             }
             Console.WriteLine();
             Console.WriteLine("Please input the venue ID you'd like to view");
-            return Console.ReadLine();
+            string venueIdInput = Console.ReadLine();
+            int intVenueId = 0;
+            bool done = false;
+            while (!done)
+            {
+                if (!int.TryParse(venueIdInput, out intVenueId) || !venueDAO.IsVenueIDValid(intVenueId))
+                {
+                    Console.WriteLine("Please enter a valid venue ID.");
+                    venueIdInput = Console.ReadLine();
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+            return intVenueId;
         }
 
         public void ListVenueById(int venueId)
@@ -79,12 +93,21 @@ namespace Capstone
             List<ListedVenue> venues = venueDAO.GetVenueInfoByID(venueId);
             ListedVenue venueWithCategories = venues[venues.Count - 1];
 
+            Console.WriteLine();
             Console.WriteLine($"{venueWithCategories.VenueName}");
             Console.WriteLine($"Location: {venueWithCategories.CityName}, {venueWithCategories.StateName}");
-            Console.WriteLine("Categories: ");
-            foreach (string cat in venueWithCategories.CategoryName)
+            Console.Write("Categories: ".PadRight(2));
+            for (int i = 0; i < venueWithCategories.CategoryName.Count; i++)
             {
-                Console.WriteLine($"{cat}");
+                if (i == venueWithCategories.CategoryName.Count - 1)
+                {
+                    Console.Write($"{venueWithCategories.CategoryName[i]}");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Write($"{venueWithCategories.CategoryName[i]}, ");
+                }
             }
             Console.WriteLine();
             Console.WriteLine($"{venueWithCategories.VenueDescription}");
@@ -119,7 +142,7 @@ namespace Capstone
                         int spaceId = int.Parse(GetSpaceIdForReservation());
                         string resName = GetNameForReservation();
                         BuildFinalReservation(availableSpaces, spaceId, reserveDate, reserveDays, resName, reserveGuests);
-                        
+
                         //GetFinalReservationInfo(availableSpaces, reserveDate, reserveDays, reserveGuests);
                         break;
                     case "r":
@@ -261,7 +284,7 @@ namespace Capstone
 
             List<DateTime> datesNeeded = new List<DateTime>();
 
-                for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
             {
                 datesNeeded.Add(i);
             }

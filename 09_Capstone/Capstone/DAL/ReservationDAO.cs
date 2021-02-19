@@ -13,6 +13,10 @@ namespace Capstone.DAL
             "INSERT INTO reservation(space_id, number_of_attendees, start_date, end_date, reserved_for) "
             + " VALUES (@spaceid, @attendees, @startdate, @enddate, @reservedfor "
             + " SELECT SCOPE_IDENTITY();";
+        private string sqlCheckBookedDates =
+            "SELECT start_date, end_date FROM reservation ";
+
+
 
         public ReservationDAO(string connectionString)
         {
@@ -49,6 +53,49 @@ namespace Capstone.DAL
                 EndDate = newReservation.EndDate,
                 ReservedFor = newReservation.ReservedFor
             };
+        }
+
+        public List<string> GetBookedDatesBySpaceId(int spaceId)
+        {
+            Reservation res = new Reservation();
+
+            DateTime firstDate;
+            DateTime lastDate;
+
+            List<string> datesBooked = new List<string>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCheckBookedDates, conn);
+                    cmd.Parameters.AddWithValue("@spaceId", spaceId);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        cmd.Parameters
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("ERROR");
+                Console.WriteLine(ex.Message);
+
+            }
+
+            return venueSpaces;
+
+            for (DateTime i = firstDate; i <= lastDate; i.AddDays(1))
+            {
+                datesBooked.Add(i.ToString("yyyy mm dd"));
+            }
+            return datesBooked;
+
         }
 
         public Reservation ConvertReaderToReservation(SqlDataReader reader)

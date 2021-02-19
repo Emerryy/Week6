@@ -119,7 +119,7 @@ namespace Capstone
                         int spaceId = int.Parse(GetSpaceIdForReservation());
                         string resName = GetNameForReservation();
                         BuildFinalReservation(availableSpaces, spaceId, reserveDate, reserveDays, resName, reserveGuests);
-                        
+
                         //GetFinalReservationInfo(availableSpaces, reserveDate, reserveDays, reserveGuests);
                         break;
                     case "r":
@@ -230,6 +230,7 @@ namespace Capstone
             int endMonth = endDate.Month;
             int startMonth = reserveDate.Month;
 
+          
             //IList<Reservation> existRes = resDAO.CheckExistingReservations();
             //foreach (Reservation res in existRes)
             //{
@@ -255,16 +256,31 @@ namespace Capstone
         }
 
 
-        public void DatesNeededForSpace(DateTime reserveDate, int reserveDays)
+        public List<string> DatesNeededForSpace(DateTime reserveDate, int reserveDays)
         {
             DateTime lastDate = reserveDate.AddDays(reserveDays);
 
-            List<DateTime> datesNeeded = new List<DateTime>();
+            List<string> datesNeeded = new List<string>();
 
-                for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
             {
-                datesNeeded.Add(i);
+                datesNeeded.Add(i.ToString("yyyy mm dd"));
             }
+            return datesNeeded;
+        }
+
+        public void CompareDatesNeededToExistingRes(int spaceId, List<string> datesNeeded)
+        {
+            List<string> datesBooked = resDAO.GetBookedDatesBySpaceId(spaceId);
+
+            for (int i = 0; i <= datesNeeded.Count; i++)
+            {
+                if (datesBooked.Contains(datesNeeded[i]))
+                {
+                    Console.WriteLine("Bookings overlap");
+                }
+            }
+
         }
     }
 }

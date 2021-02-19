@@ -107,13 +107,12 @@ namespace Capstone
                     case "1":
                         Console.WriteLine();
                         string spaceInfoInput = PrintSpaceInfo(venueId);
+                      
+                        break;
+                    case "2":
                         string spaceTime = ReserveASpaceTime();
                         string spaceDays = ReserveASpaceDays();
                         string spaceAttendees = ReserveASpaceAttendees();
-
-                        break;
-                    case "2":
-                        //2) Search for Reservation
                         break;
                     case "r":
                         Console.WriteLine("Returning to previous page...");
@@ -125,6 +124,13 @@ namespace Capstone
                 }
             }
         }
+
+        public string ReservationNeeds(string spaceTime, string spaceDays, string)
+        {
+
+        }
+
+       
 
         public string PrintSpaceInfo(int venueId)
         {
@@ -152,10 +158,12 @@ namespace Capstone
 
         }
 
-        public string ReserveASpaceTime()
+        public DateTime ReserveASpaceTime()
         {
-            Console.Write("When do you need the space? ");
-            return Console.ReadLine();
+             Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
+             DateTime firstDay = DateTime.Parse(Console.ReadLine());
+
+            return
         }
 
         public string ReserveASpaceDays()
@@ -175,5 +183,36 @@ namespace Capstone
             Console.WriteLine();
         }
 
+
+
+
+        //public DateTime ReserveASpaceTime()
+        //{
+        //    Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
+        //    DateTime firstDay = DateTime.Parse(Console.ReadLine());
+
+        //    return
+        //}
+
+        //public string ReserveASpaceDays()
+        //{
+        //    Console.Write("How many days will you need the space? ");
+        //    return Console.ReadLine();
+        //}
+
+        //public string ReserveASpaceAttendees()
+        //{
+        //    Console.Write("How many people will be in attendance? ");
+        //    return Console.ReadLine();
+        //}
+
+        //public void GetSpaceInfoByVenue(int venueId)
+        //{
+        //    Console.WriteLine();
+        //}
+
+        //string spaceTime = ReserveASpaceTime();
+        //string spaceDays = ReserveASpaceDays();
+        //string spaceAttendees = ReserveASpaceAttendees();
     }
 }

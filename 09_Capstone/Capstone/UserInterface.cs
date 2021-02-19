@@ -35,8 +35,7 @@ namespace Capstone
                 switch (result.ToLower())
                 {
                     case "1":
-                        string venueIdInput = ListVenuesGetId();
-                        int venueId = int.Parse(venueIdInput);
+                        int venueId = ListVenuesGetId();
                         ListVenueById(venueId);
                         string viewOrReserveMenuInput = PrintViewOrReserveChoices();
                         ViewOrReserveSpaceMenu(viewOrReserveMenuInput, venueId);
@@ -55,13 +54,13 @@ namespace Capstone
         }
         public string DisplayMainMenu()
         {
-            Console.WriteLine("Welcome to Exscelsior Venues! Sorry if I spelled our own name wrong");
+            Console.WriteLine("Welcome to Exscelsior Venues!");
             Console.WriteLine("1) List Venues");
             Console.WriteLine("Q) Quit");
             return Console.ReadLine();
         }
 
-        public string ListVenuesGetId()
+        public int ListVenuesGetId()
         {
             IList<Venue> venues = venueDAO.GetVenuesInAlphaOrder();
 
@@ -71,7 +70,22 @@ namespace Capstone
             }
             Console.WriteLine();
             Console.WriteLine("Please input the venue ID you'd like to view");
-            return Console.ReadLine();
+            string venueIdInput = Console.ReadLine();
+            int intVenueId = 0;
+            bool done = false;
+            while (!done)
+            {
+                if (!int.TryParse(venueIdInput, out intVenueId) || !venueDAO.IsVenueIDValid(intVenueId))
+                {
+                    Console.WriteLine("Please enter a valid venue ID.");
+                    venueIdInput = Console.ReadLine();
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+            return intVenueId;
         }
 
         public void ListVenueById(int venueId)
@@ -79,12 +93,21 @@ namespace Capstone
             List<ListedVenue> venues = venueDAO.GetVenueInfoByID(venueId);
             ListedVenue venueWithCategories = venues[venues.Count - 1];
 
+            Console.WriteLine();
             Console.WriteLine($"{venueWithCategories.VenueName}");
             Console.WriteLine($"Location: {venueWithCategories.CityName}, {venueWithCategories.StateName}");
-            Console.WriteLine("Categories: ");
-            foreach (string cat in venueWithCategories.CategoryName)
+            Console.Write("Categories: ".PadRight(2));
+            for (int i = 0; i < venueWithCategories.CategoryName.Count; i++)
             {
-                Console.WriteLine($"{cat}");
+                if (i == venueWithCategories.CategoryName.Count - 1)
+                {
+                    Console.Write($"{venueWithCategories.CategoryName[i]}");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Write($"{venueWithCategories.CategoryName[i]}, ");
+                }
             }
             Console.WriteLine();
             Console.WriteLine($"{venueWithCategories.VenueDescription}");
@@ -112,15 +135,9 @@ namespace Capstone
                         string spaceInfoInput = PrintSpaceInfo(venueId);
                         break;
                     case "2":
-                        DateTime reserveDate = ReserveASpaceTime();
-                        int reserveDays = ReserveASpaceDays();
-                        int reserveGuests = ReserveASpaceAttendees();
-                        IList<Space> availableSpaces = ListAvailableSpaces(venueId, reserveDate, reserveDays, reserveGuests);
-                        int spaceId = int.Parse(GetSpaceIdForReservation());
-                        string resName = GetNameForReservation();
-                        BuildFinalReservation(availableSpaces, spaceId, reserveDate, reserveDays, resName, reserveGuests);
 
-                        //GetFinalReservationInfo(availableSpaces, reserveDate, reserveDays, reserveGuests);
+                        Reservation addedReservation = MakeReservation(venueId);
+
                         break;
                     case "r":
                         Console.WriteLine("Returning to previous page..");
@@ -132,6 +149,19 @@ namespace Capstone
                         break;
                 }
             }
+        }
+
+        public Reservation MakeReservation(int venueId)
+        {
+            DateTime reserveDate = ReserveASpaceTime();
+            int reserveDays = ReserveASpaceDays();
+            int reserveGuests = ReserveASpaceAttendees();
+            IList<Space> availableSpaces = ListAvailableSpaces(venueId, reserveDate, reserveDays, reserveGuests);
+            int spaceId = int.Parse(GetSpaceIdForReservation());
+            string resName = GetNameForReservation();
+            Reservation constructReservation = GatherReservationInfo(availableSpaces, spaceId, reserveDate, reserveDays, resName, reserveGuests);
+            Reservation finalReservation = resDAO.AddNewReservation(constructReservation);
+            return finalReservation;
         }
 
         public IList<Space> ListAvailableSpaces(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)
@@ -158,17 +188,17 @@ namespace Capstone
             return Console.ReadLine();
         }
 
-        public Reservation BuildFinalReservation(IList<Space> spaces, int spaceId, DateTime reserveDate, int reserveDays, string resName, int reserveGuests)
+        public Reservation GatherReservationInfo(IList<Space> spaces, int spaceId, DateTime reserveDate, int reserveDays, string resName, int reserveGuests)
         {
-            Reservation finalRes = new Reservation();
-            finalRes.ReservationId = 0; //todo probably a sql thing
-            finalRes.SpaceId = spaceId;
-            finalRes.NumberOfAttendees = reserveGuests;
-            finalRes.StartDate = reserveDate;
-            finalRes.EndDate = reserveDate.AddDays(reserveDays);
-            finalRes.ReservedFor = resName;
+            Reservation buildingRes = new Reservation();
+            buildingRes.ReservationId = 0;
+            buildingRes.SpaceId = spaceId;
+            buildingRes.NumberOfAttendees = reserveGuests;
+            buildingRes.StartDate = reserveDate;
+            buildingRes.EndDate = reserveDate.AddDays(reserveDays);
+            buildingRes.ReservedFor = resName;
 
-            return finalRes;
+            return buildingRes;
         }
 
 
@@ -273,7 +303,9 @@ namespace Capstone
         {
             List<string> datesBooked = resDAO.GetBookedDatesBySpaceId(spaceId);
 
+
             for (int i = 0; i <= datesNeeded.Count; i++)
+
             {
                 if (datesBooked.Contains(datesNeeded[i]))
                 {

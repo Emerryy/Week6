@@ -19,6 +19,8 @@ namespace Capstone.DAL
                                             + "JOIN state s ON s.abbreviation = c.state_abbreviation "
                                             + "WHERE v.id = @id; ";
 
+        private string sqlLookForVenueID = " SELECT COUNT(*) FROM venue WHERE id = @id";
+
         public VenueDAO(string connectionString)
         {
             this.connectionString = connectionString;
@@ -97,6 +99,34 @@ namespace Capstone.DAL
 
             return venueInfo;
 
+        }
+
+        public bool IsVenueIDValid(int venueId)
+        {
+            bool valid = false;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlLookForVenueID, conn);
+                    cmd.Parameters.AddWithValue("@id", venueId);
+                    int doesItExist = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (doesItExist == 1)
+                    {
+                        valid = true;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("ERROR");
+                Console.WriteLine(ex.Message);
+            }
+
+            return valid;
         }
 
         public Venue ConvertReaderToVenue(SqlDataReader reader)

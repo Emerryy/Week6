@@ -131,13 +131,10 @@ namespace Capstone
                 switch (viewOrReserveMenuInput.ToLower())
                 {
                     case "1":
-                        Console.WriteLine();
                         string spaceInfoInput = PrintSpaceInfo(venueId);
                         break;
                     case "2":
-
                         Reservation addedReservation = MakeReservation(venueId);
-
                         break;
                     case "r":
                         Console.WriteLine("Returning to previous page..");
@@ -205,9 +202,10 @@ namespace Capstone
         public string PrintSpaceInfo(int venueId)
         {
             IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
+
+            Console.WriteLine();
             foreach (Space space in spacesList)
             {
-
                 if (space.OpenFrom == -1 || space.OpenTo == -1)
                 {
                     Console.WriteLine($"#{space.Id} {space.Name} Open Year Round {space.DailyRate} {space.MaxOccupancy} ");

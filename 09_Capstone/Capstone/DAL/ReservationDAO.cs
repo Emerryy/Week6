@@ -9,54 +9,47 @@ namespace Capstone.DAL
     public class ReservationDAO
     {
         private string connectionString;
+        private string sqlAddNewReservation =
+            "INSERT INTO reservation(space_id, number_of_attendees, start_date, end_date, reserved_for) "
+            + " VALUES (@spaceid, @attendees, @startdate, @enddate, @reservedfor "
+            + " SELECT SCOPE_IDENTITY();";
+
         public ReservationDAO(string connectionString)
         {
             this.connectionString = connectionString;
         }
 
-
-        public void AddNewReservation()
+        public Reservation AddNewReservation(Reservation newReservation)
         {
+            int reservationID = 0;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("INSERT INTO reservation ", conn);
+                    SqlCommand cmd = new SqlCommand(sqlAddNewReservation, conn);
+                    cmd.Parameters.AddWithValue("@spaceid", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@attendees", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@startdate", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@enddate", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@reservedfor", newReservation.SpaceId);
+
+                    reservationID = Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
+            catch (SqlException) { }
 
-            resDAO.ConvertReaderToReservation
-        }
-
-        public void CheckExistingReservations()
-        {
-            List<Reservation> existingReservations = new List<Reservation>();
-            try
+            return new Reservation
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM reservation", conn);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Reservation res = ConvertReaderToReservation(reader);
-                        existingReservations.Add(res);
-                    }
-                }
-            }
-            catch
-            {
-
-            }
-            return existingReservations;
+                ReservationId = reservationID,
+                SpaceId = newReservation.SpaceId,
+                NumberOfAttendees = newReservation.NumberOfAttendees,
+                StartDate = newReservation.StartDate,
+                EndDate = newReservation.EndDate,
+                ReservedFor = newReservation.ReservedFor
+            };
         }
-
-
 
         public Reservation ConvertReaderToReservation(SqlDataReader reader)
         {

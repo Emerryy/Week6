@@ -233,37 +233,5 @@ namespace Capstone
         {
             Console.WriteLine();
         }
-
-
-
-
-        //public DateTime ReserveASpaceTime()
-        //{
-        //    Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
-        //    DateTime firstDay = DateTime.Parse(Console.ReadLine());
-
-        //    return
-        //}
-
-        //public string ReserveASpaceDays()
-        //{
-        //    Console.Write("How many days will you need the space? ");
-        //    return Console.ReadLine();
-        //}
-
-        //public string ReserveASpaceAttendees()
-        //{
-        //    Console.Write("How many people will be in attendance? ");
-        //    return Console.ReadLine();
-        //}
-
-        //public void GetSpaceInfoByVenue(int venueId)
-        //{
-        //    Console.WriteLine();
-        //}
-
-        //string spaceTime = ReserveASpaceTime();
-        //string spaceDays = ReserveASpaceDays();
-        //string spaceAttendees = ReserveASpaceAttendees();
     }
 }

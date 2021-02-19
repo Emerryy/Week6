@@ -163,19 +163,41 @@ namespace Capstone
              Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
              DateTime firstDay = DateTime.Parse(Console.ReadLine());
 
-            return
+            return firstDay;
         }
 
-        public string ReserveASpaceDays()
+        public int ReserveASpaceDays()
         {
             Console.Write("How many days will you need the space? ");
-            return Console.ReadLine();
+            int daysNeeded = int.Parse(Console.ReadLine());
+
+            return daysNeeded;
         }
 
-        public string ReserveASpaceAttendees()
+        public int ReserveASpaceAttendees()
         {
             Console.Write("How many people will be in attendance? ");
-            return Console.ReadLine();
+            int numGuests = int.Parse(Console.ReadLine());
+            return numGuests;
+        }
+
+        public void CheckAvailSpace(int venueId, DateTime firstDay, int daysNeeded, int numGuests)
+        {
+            IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
+            int startMonth = firstDay.Month;
+            Space[] openMonths = 
+
+            foreach (Space space in spacesList)
+            {
+
+
+
+                if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo)
+                {
+
+                }
+            }
+
         }
 
         public void GetSpaceInfoByVenue(int venueId)

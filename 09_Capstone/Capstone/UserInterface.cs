@@ -15,6 +15,10 @@ namespace Capstone
         private string connectionString;
         private VenueDAO venueDAO;
         private SpacesDAO spaceDAO;
+        //private DateTime firstDay;
+        //private int daysNeeded;
+        //private int numGuests;
+
 
         public UserInterface(string connectionString)
         {
@@ -33,9 +37,9 @@ namespace Capstone
                 switch (result.ToLower())
                 {
                     case "1":
-                        string venueMenuInput = ListVenuesMenu();
-                        string venueInfoMenuInput = GetVenueInfo(int.Parse(venueMenuInput));
-                        VenueSpacesOrReservationMenu(venueInfoMenuInput, int.Parse(venueMenuInput));
+                        string venueIdInput = ListVenuesMenu();
+                        string venueInfoMenuInput = GetVenueInfo(int.Parse(venueIdInput));
+                        VenueSpacesOrReservationMenu(venueInfoMenuInput, int.Parse(venueIdInput));
 
                         break;
                     case "q":
@@ -76,17 +80,17 @@ namespace Capstone
             List<ListedVenue> listedVenues = venueDAO.GetVenueInfoByID(venueId);
 
 
-               ListedVenue lv2 = listedVenues[listedVenues.Count- 1];
+            ListedVenue lv2 = listedVenues[listedVenues.Count - 1];
 
-                Console.WriteLine($"{lv2.VenueName}");
-                Console.WriteLine($"{lv2.CityName}, {lv2.StateName}");
-                foreach (string cat in lv2.CategoryName)
-                {
-                    Console.WriteLine($"{cat}");
-                }
-                Console.WriteLine();
-                Console.WriteLine($"{lv2.VenueDescription}");
-           
+            Console.WriteLine($"{lv2.VenueName}");
+            Console.WriteLine($"{lv2.CityName}, {lv2.StateName}");
+            foreach (string cat in lv2.CategoryName)
+            {
+                Console.WriteLine($"{cat}");
+            }
+            Console.WriteLine();
+            Console.WriteLine($"{lv2.VenueDescription}");
+
             //Console.WriteLine("Pretend this is info about a venue!");
             Console.WriteLine();
 
@@ -107,12 +111,14 @@ namespace Capstone
                     case "1":
                         Console.WriteLine();
                         string spaceInfoInput = PrintSpaceInfo(venueId);
-                      
+
                         break;
                     case "2":
-                        string spaceTime = ReserveASpaceTime();
-                        string spaceDays = ReserveASpaceDays();
-                        string spaceAttendees = ReserveASpaceAttendees();
+                        DateTime reserveDate = ReserveASpaceTime();
+                        int reserveDays = ReserveASpaceDays();
+                        int reserveGuests = ReserveASpaceAttendees();
+                        SpaceReservationMenu(venueId, reserveDate, reserveDays, reserveGuests);
+                        //SpaceReservationMenu(venueId, reserveDate, reserveDays, reserveGuests);
                         break;
                     case "r":
                         Console.WriteLine("Returning to previous page...");
@@ -125,12 +131,26 @@ namespace Capstone
             }
         }
 
-        public string ReservationNeeds(string spaceTime, string spaceDays, string)
+        public void SpaceReservationMenu(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)
         {
+            IList<Space> spaces = CheckAvailSpace(venueId, reserveDate, reserveDays, reserveGuests);
+            Console.WriteLine("These spaces are available based on your needs:");
+            foreach (Space space in spaces)
+            {
+                Console.WriteLine($"{space.Id} {space.Name} ${space.DailyRate} {space.MaxOccupancy} {space.IsAccessible} ${space.DailyRate * reserveDays} ");
+            }
+
+            Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");
+            string spaceIdInput = Console.ReadLine();
+            Console.WriteLine("Who is this reservation for?");
+            string resNameInput = Console.ReadLine();
+
 
         }
 
-       
+
+
+
 
         public string PrintSpaceInfo(int venueId)
         {
@@ -160,8 +180,8 @@ namespace Capstone
 
         public DateTime ReserveASpaceTime()
         {
-             Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
-             DateTime firstDay = DateTime.Parse(Console.ReadLine());
+            Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
+            DateTime firstDay = DateTime.Parse(Console.ReadLine());
 
             return firstDay;
         }
@@ -177,26 +197,35 @@ namespace Capstone
         public int ReserveASpaceAttendees()
         {
             Console.Write("How many people will be in attendance? ");
+
             int numGuests = int.Parse(Console.ReadLine());
             return numGuests;
         }
 
-        public void CheckAvailSpace(int venueId, DateTime firstDay, int daysNeeded, int numGuests)
+        public IList<Space> CheckAvailSpace(int venueId, DateTime firstDay, int daysNeeded, int numGuests)
         {
             IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
+            DateTime endDate = firstDay.AddDays(daysNeeded);
+            IList<Space> matchSpaces = new List<Space>();
+
+            int endMonth = endDate.Month;
             int startMonth = firstDay.Month;
-            Space[] openMonths = 
 
             foreach (Space space in spacesList)
             {
-
-
-
-                if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo)
+                if (space.OpenFrom == -1 && numGuests <= space.MaxOccupancy)
                 {
-
+                    matchSpaces.Add(space);
+                    //Console.WriteLine($"{space.Id} {space.Name} ${space.DailyRate} {space.MaxOccupancy} {space.IsAccessible} ${space.DailyRate * daysNeeded} ");
                 }
+                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && numGuests <= space.MaxOccupancy)
+                {
+                    matchSpaces.Add(space);
+                    //Console.WriteLine($"{space.Id} {space.Name} ${space.DailyRate} {space.MaxOccupancy} {space.IsAccessible} ${space.DailyRate * daysNeeded} ");
+                }
+
             }
+            return matchSpaces;
 
         }
 

@@ -297,20 +297,20 @@ namespace Capstone
             return datesNeeded;
         }
 
-        public void CompareDatesNeededToExistingRes(int spaceId, List<string> datesNeeded)
-        {
-            List<string> datesBooked = resDAO.GetBookedDatesBySpaceId(spaceId);
+        //public void CompareDatesNeededToExistingRes(int spaceId, List<string> datesNeeded)
+        //{
+        //    List<string> datesBooked = resDAO.GetBookedDatesBySpaceId(spaceId);
 
 
-            for (int i = 0; i <= datesNeeded.Count; i++)
+        //    for (int i = 0; i <= datesNeeded.Count; i++)
 
-            {
-                if (datesBooked.Contains(datesNeeded[i]))
-                {
-                    Console.WriteLine("Bookings overlap");
-                }
-            }
+        //    {
+        //        if (datesBooked.Contains(datesNeeded[i]))
+        //        {
+        //            Console.WriteLine("Bookings overlap");
+        //        }
+        //    }
 
-        }
+        //}
     }
 }

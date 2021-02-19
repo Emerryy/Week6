@@ -73,9 +73,21 @@ namespace Capstone
 
         public string GetVenueInfo(int venueId)
         {
-            //Venue venue = venueDAO.GetVenueInfoByID(venueId);          //todo fix venue info by ID
-            //return "";
-            Console.WriteLine("Pretend this is info about a venue!");
+            List<ListedVenue> listedVenues = venueDAO.GetVenueInfoByID(venueId);
+
+
+               ListedVenue lv2 = listedVenues[listedVenues.Count- 1];
+
+                Console.WriteLine($"{lv2.VenueName}");
+                Console.WriteLine($"{lv2.CityName}, {lv2.StateName}");
+                foreach (string cat in lv2.CategoryName)
+                {
+                    Console.WriteLine($"{cat}");
+                }
+                Console.WriteLine();
+                Console.WriteLine($"{lv2.VenueDescription}");
+           
+            //Console.WriteLine("Pretend this is info about a venue!");
             Console.WriteLine();
 
             Console.WriteLine("What would you like to do next?");
@@ -152,7 +164,7 @@ namespace Capstone
             return Console.ReadLine();
         }
 
-        public string ReserveASpaceAttendees() 
+        public string ReserveASpaceAttendees()
         {
             Console.Write("How many people will be in attendance? ");
             return Console.ReadLine();

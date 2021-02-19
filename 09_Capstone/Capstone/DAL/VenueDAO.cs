@@ -12,12 +12,12 @@ namespace Capstone.DAL
 
         private string connectionString;
 
-        private string sqlGetVenueInfoById = "  SELECT v.name, v.description, c.name, s.name, ca.name FROM category_venue cv "
-                                            + "JOIN category ca ON ca.id = cv.category_id"
-                                            + "JOIN venue v ON v.id = cv.venue_id"
-                                            + "JOIN city c ON c.id = v.city_id"
-                                            + "JOIN state s ON s.abbreviation = c.state_abbreviation"
-                                            + "WHERE v.id = @id;";
+        private string sqlGetVenueInfoById = "  SELECT v.name AS VenueName, v.description AS VenueDescription, c.name AS CityName, s.name AS StateName, ca.name AS CategoryName FROM category_venue cv "
+                                            + "JOIN category ca ON ca.id = cv.category_id "
+                                            + "JOIN venue v ON v.id = cv.venue_id " 
+                                            + "JOIN city c ON c.id = v.city_id "
+                                            + "JOIN state s ON s.abbreviation = c.state_abbreviation "
+                                            + "WHERE v.id = @id; ";
 
         public VenueDAO(string connectionString)
         {
@@ -57,12 +57,40 @@ namespace Capstone.DAL
         }
 
 
-        public List<string> GetVenueInfoByID(int venueId)
+        //public List<string> GetVenueInfoByID(int venueId)
+        //{
+        //    List<string> venueInfo = new List<string>();
+        //    //Venue venue = new Venue();
+        //    //City city = new City();
+        //    //Category cat = new Category();
+        //    try
+        //    {
+        //        using (SqlConnection conn = new SqlConnection(connectionString))
+        //        {
+        //            conn.Open();
+
+        //            SqlCommand cmd = new SqlCommand(sqlGetVenueInfoById, conn);
+        //            cmd.Parameters.AddWithValue("@id", venueId);
+
+        //            SqlDataReader reader = cmd.ExecuteReader();
+
+        //            while (reader.Read())
+        //            {
+        //                venueInfo = ConvertReaderToVenue(reader);
+        //            }
+        //        }
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        Console.WriteLine("ERROR");
+        //        Console.WriteLine(ex.Message);
+        //    }
+        //    return venueInfo;
+        //}
+
+        public List<ListedVenue> GetVenueInfoByID(int venueId)
         {
-            List<string> venueInfo = new List<string>();
-            Venue venue = new Venue();
-            City city = new City();
-            Category cat = new Category();
+            List<ListedVenue> venueInfo = new List<ListedVenue>();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -73,10 +101,22 @@ namespace Capstone.DAL
                     cmd.Parameters.AddWithValue("@id", venueId);
 
                     SqlDataReader reader = cmd.ExecuteReader();
+                    List<string> categories = new List<string>();
 
                     while (reader.Read())
                     {
-                        venue = ConvertReaderToVenue(reader);
+                        
+
+                        ListedVenue lV = new ListedVenue();
+                        lV.VenueName = Convert.ToString(reader["VenueName"]);
+                        lV.VenueDescription = Convert.ToString(reader["VenueDescription"]);
+                        lV.CityName = Convert.ToString(reader["CityName"]);
+                        lV.StateName = Convert.ToString(reader["StateName"]);
+                        categories.Add(Convert.ToString(reader["CategoryName"]));
+
+                        lV.CategoryName = categories;
+
+                        venueInfo.Add(lV);
                     }
                 }
             }
@@ -85,7 +125,9 @@ namespace Capstone.DAL
                 Console.WriteLine("ERROR");
                 Console.WriteLine(ex.Message);
             }
+
             return venueInfo;
+
         }
 
         private Venue ConvertReaderToVenue(SqlDataReader reader)

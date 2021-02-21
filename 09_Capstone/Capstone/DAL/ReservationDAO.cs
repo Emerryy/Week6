@@ -72,13 +72,13 @@ namespace Capstone.DAL
                     
                     while (reader.Read())
                     {
-                        Reservation bD = new Reservation();
-                        
-                        bD.StartDate = Convert.ToDateTime(reader["start_date"]);
-                        bD.EndDate = Convert.ToDateTime (reader["end_date"]);
-                       
+                        DateTime date1 = Convert.ToDateTime(reader["start_date"]);
+                        DateTime date2 = Convert.ToDateTime (reader["end_date"]);
 
-                        //bookedDates.Add(bD);
+                        for (DateTime i = date1; i <= date2; i = i.AddDays(1))
+                        {
+                            bookedDates.Add(i);
+                        }
                     }
                 }
             }

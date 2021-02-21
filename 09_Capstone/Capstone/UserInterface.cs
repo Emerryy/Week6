@@ -352,12 +352,6 @@ namespace Capstone
             return matchSpaces;
         }
 
-        public void GetSpaceInfoByVenue(int venueId)
-        {
-            Console.WriteLine();
-        }
-
-
         public List<DateTime> DatesNeededForSpace(DateTime reserveDate, int reserveDays)
         {
             DateTime lastDate = reserveDate.AddDays(reserveDays);
@@ -371,23 +365,22 @@ namespace Capstone
             return datesNeeded;
         }
 
-                //public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
-        //{
-        //    Reservation res = new Reservation();
-        //    List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
+        public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
+        {
+            List<DateTime> datesBooked = resDAO.GetBookedDates(spaceId);
 
-        //    foreach (DateTime dateTime in datesNeeded)
-        //    {
-        //        if (datesBooked.Contains(dateTime))
-        //        {
-        //            Console.WriteLine("Sorry, that space isn't available for your requested dates.");
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("That space is available!");
-        //        }
-        //    }
+            foreach (DateTime dateTime in datesNeeded)
+            {
+                if (datesBooked.Contains(dateTime))
+                {
+                    Console.WriteLine("Sorry, that space isn't available for your requested dates.");
+                }
+                else
+                {
+                    Console.WriteLine("That space is available!");
+                }
+            }
 
-        //}
-     }
+        }
+    }
 }

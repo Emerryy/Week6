@@ -54,10 +54,10 @@ namespace Capstone.Tests
 
 
         [TestMethod]
-        [DataRow(1)]
-        [DataRow(4)]
+    
         public void CanYouGetVenueInfoByID()
         {
+            //List<Venue> venueinfo = venueDAO.GetVenueInfoByID(6);
 
         }
     }

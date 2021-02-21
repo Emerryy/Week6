@@ -284,33 +284,36 @@ namespace Capstone
         }
 
 
-        public List<string> DatesNeededForSpace(DateTime reserveDate, int reserveDays)
+        public List<DateTime> DatesNeededForSpace(DateTime reserveDate, int reserveDays)
         {
             DateTime lastDate = reserveDate.AddDays(reserveDays);
 
-            List<string> datesNeeded = new List<string>();
+            List<DateTime> datesNeeded = new List<DateTime>();
 
             for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
             {
-                datesNeeded.Add(i.ToString("yyyy mm dd"));
+                datesNeeded.Add(i);
             }
             return datesNeeded;
         }
 
-        //public void CompareDatesNeededToExistingRes(int spaceId, List<string> datesNeeded)
-        //{
-        //    List<string> datesBooked = resDAO.GetBookedDatesBySpaceId(spaceId);
+        public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
+        {
+            Reservation res = new Reservation();
+            List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
+           
+            foreach (DateTime dateTime in datesNeeded)
+            {
+                if (datesNeeded.Contains(dateTime))
+                {
+                    (Console.WriteLine("Sorry, that space isn't available for your requested dates.");
+                }
+                else
+                {
+                    Console.WriteLine("That space is available!");
+                }
+            }
 
-
-        //    for (int i = 0; i <= datesNeeded.Count; i++)
-
-        //    {
-        //        if (datesBooked.Contains(datesNeeded[i]))
-        //        {
-        //            Console.WriteLine("Bookings overlap");
-        //        }
-        //    }
-
-        //}
+        }
     }
 }

@@ -240,6 +240,11 @@ namespace Capstone
             return finalReservation;
         }
 
+        public void RunReservationMenu()
+        {
+
+        }
+
         public IList<Space> ListAvailableSpaces(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)
         {
             IList<Space> spaces = CheckAndReturnAvailSpaces(venueId, reserveDate, reserveDays, reserveGuests);
@@ -253,8 +258,7 @@ namespace Capstone
 
         public string GetSpaceIdForReservation()
         {
-            Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");
-            //todo validate
+            Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");             //todo validate
             return Console.ReadLine();
         }
 
@@ -314,18 +318,44 @@ namespace Capstone
 
         public int ReserveASpaceDays()
         {
-            Console.Write("How many days will you need the space? ");
-            int daysNeeded = int.Parse(Console.ReadLine());
-
-            return daysNeeded;
+            int numberOfReserveDays = 0;
+            bool done = false;
+            while (!done)
+            {
+                Console.Write("How many days will you need the space? ");
+                string input = Console.ReadLine();
+                bool succeeded = int.TryParse(input, out numberOfReserveDays);
+                if (!succeeded)
+                {
+                    Console.WriteLine("Please enter an integer number.");
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+            return numberOfReserveDays;
         }
 
         public int ReserveASpaceAttendees()
         {
-            Console.Write("How many people will be in attendance? ");
-
-            int numGuests = int.Parse(Console.ReadLine());
-            return numGuests;
+            int numberOfAttendees = 0;
+            bool done = false;
+            while (!done)
+            {
+                Console.Write("How many people will be in attendance? ");
+                string input = Console.ReadLine();
+                bool succeeded = int.TryParse(input, out numberOfAttendees);
+                if (!succeeded)
+                {
+                    Console.WriteLine("Please enter an integer number.");
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+            return numberOfAttendees;
         }
 
         public IList<Space> CheckAndReturnAvailSpaces(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)

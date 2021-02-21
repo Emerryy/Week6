@@ -233,7 +233,7 @@ namespace Capstone
                 int reserveDays = ReserveASpaceDays();
                 int reserveGuests = ReserveASpaceAttendees();
                 IList<Space> availableSpaces = ListAvailableSpaces(venueId, reserveDate, reserveDays, reserveGuests);
-                int spaceId = int.Parse(GetSpaceIdForReservation());
+                int spaceId = GetSpaceIdForReservation();
                 if (spaceId == 0)
                 {
                     done = true;
@@ -265,11 +265,49 @@ namespace Capstone
             return spaces;
         }
 
-        public string GetSpaceIdForReservation()
+        public int GetSpaceIdForReservation()
         {
-            Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");             //todo validate
-            return Console.ReadLine();
+            bool done = false;
+            int spaceId = 0;
+            while (!done)
+            {
+                Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");             //todo validate
+                string input = Console.ReadLine();
+                bool succeeded = int.TryParse(input, out spaceId);
+                if (!succeeded || !spaceDAO.IsSpaceIDValid(spaceId))
+                {
+                    Console.WriteLine("Please enter a valid space ID#.");
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+            return spaceId;
         }
+
+        //        bool done = false;
+        //            while (!done)
+        //            {
+        //                PrintListVenuesMenu();
+        //        string input = Console.ReadLine();
+        //        int venueId;
+        //                if (input.ToLower() == "r")
+        //                {
+        //                    done = true;
+        //                }
+        //                else if (!int.TryParse(input, out venueId) || !venueDAO.IsVenueIDValid(venueId))
+        //                {
+        //                    Console.Write("Please enter a valid venue ID, or R to go back: ");
+        //                    input = Console.ReadLine();
+        //                }
+        //                else
+        //{
+        //    RunVenueDetailsMenu(venueId);
+        //    done = true;
+        //}
+        //            }
+
 
         public string GetNameForReservation()
         {
@@ -379,11 +417,11 @@ namespace Capstone
 
             foreach (Space space in spacesList)
             {
-                if (space.OpenFrom == -1 && reserveGuests <= space.MaxOccupancy)
+                if (space.OpenFrom == -1 && reserveGuests <= space.MaxOccupancy && CompareDatesNeededToExistingRes(space.Id, reserveDate, reserveDays))
                 {
                     matchSpaces.Add(space);
                 }
-                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && reserveGuests <= space.MaxOccupancy)
+                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && reserveGuests <= space.MaxOccupancy && CompareDatesNeededToExistingRes(space.Id, reserveDate, reserveDays))
                 {
                     matchSpaces.Add(space);
                 }
@@ -391,32 +429,20 @@ namespace Capstone
             return matchSpaces;
         }
 
-
-            List<DateTime> datesNeeded = new List<DateTime>();
-
-            for (DateTime i = reserveDate; i <= lastDate; i = i.AddDays(1))
-            {
-                datesNeeded.Add(i);
-            }
-            return datesNeeded;
-        }
-
-        public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
+        public bool CompareDatesNeededToExistingRes(int spaceId, DateTime reserveDate, int reserveDays)
         {
+            bool success = false;
+            DateTime lastDate = reserveDate.AddDays(reserveDays);
             List<DateTime> datesBooked = resDAO.GetBookedDates(spaceId);
 
             foreach (DateTime dateTime in datesBooked)
             {
-                if (datesBooked.Contains(reserveDate) || datesBooked.Contains(lastDate))
+                if (!datesBooked.Contains(reserveDate) && !datesBooked.Contains(lastDate))
                 {
-                    Console.WriteLine("Sorry, that space isn't available for your requested dates.");
-                }
-                else
-                {
-                    Console.WriteLine("That space is available!");
+                    success = true;
                 }
             }
-
+            return success;
         } //todo implement
     }
 }

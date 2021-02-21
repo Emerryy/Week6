@@ -56,9 +56,9 @@ namespace Capstone.DAL
             };
         }
 
-        public List<Reservation> GetBookedDates(int spaceId)
+        public List<DateTime> GetBookedDates(int spaceId)
         {
-            List<Reservation> bookedDates = new List<Reservation>();
+            List<DateTime> bookedDates = new List<DateTime>();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -72,12 +72,10 @@ namespace Capstone.DAL
                     
                     while (reader.Read())
                     {
-                        Reservation bD = new Reservation();
-                        
-                        bD.StartDate = Convert.ToDateTime(reader["start_date"]);
-                        bD.EndDate = Convert.ToDateTime(reader["end_date"]);
                        
-                        bookedDates.Add(bD);
+                        bookedDates.Add(Convert.ToDateTime(reader["start_date"]));
+                        bookedDates.Add(Convert.ToDateTime(reader["end_date"]));
+                       
                     }
                 }
             }

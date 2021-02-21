@@ -295,11 +295,16 @@ namespace Capstone
         public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
         {
             Reservation res = new Reservation();
-            List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
-           
+            List<DateTime> datesBooked = resDAO.GetBookedDates(spaceId);
+
+            for (DateTime i = res.StartDate; i <= res.EndDate; i.AddDays(1))
+            {
+                datesBooked.Add(i);
+            }
+
             foreach (DateTime dateTime in datesNeeded)
             {
-                if (datesNeeded.Contains(dateTime))
+                if (datesBooked.Contains(dateTime))
                 {
                     Console.WriteLine("Sorry, that space isn't available for your requested dates.");
                 }

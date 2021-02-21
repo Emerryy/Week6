@@ -78,7 +78,7 @@ namespace Capstone.DAL
                         bD.EndDate = Convert.ToDateTime (reader["end_date"]);
                        
 
-                        bookedDates.Add(bD);
+                        //bookedDates.Add(bD);
                     }
                 }
             }

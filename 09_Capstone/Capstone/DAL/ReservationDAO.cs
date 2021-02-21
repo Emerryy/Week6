@@ -14,7 +14,7 @@ namespace Capstone.DAL
             + " VALUES (@spaceid, @attendees, @startdate, @enddate, @reservedfor "
             + " SELECT SCOPE_IDENTITY();";
         private string sqlCheckBookedDates =
-            "SELECT start_date, end_date FROM reservation ";
+            "SELECT start_date, end_date, space_id FROM reservation ";
 
 
 
@@ -55,49 +55,40 @@ namespace Capstone.DAL
             };
         }
 
-        //public List<string> GetBookedDatesBySpaceId(int spaceId)
-        //{
-        //    Reservation res = new Reservation();
+        public List<Reservation> GetBookedDates(int spaceId)
+        {
+            List<Reservation> bookedDates = new List<Reservation>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
 
-        //    DateTime firstDate;
-        //    DateTime lastDate;
+                    SqlCommand cmd = new SqlCommand(sqlCheckBookedDates, conn);
+                    cmd.Parameters.AddWithValue("@spaceid", spaceId);
 
-        //    List<string> datesBooked = new List<string>();
-
-        //    try
-        //    {
-        //        using (SqlConnection conn = new SqlConnection(connectionString))
-        //        {
-        //            conn.Open();
-
-        //            SqlCommand cmd = new SqlCommand(sqlCheckBookedDates, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
                     
+                    while (reader.Read())
+                    {
+                        Reservation bD = new Reservation();
+                        
+                        bD.StartDate = Convert.ToDateTime(reader["start_date"]);
+                        bD.EndDate = Convert.ToDateTime (reader["end_date"]);
+                       
 
-        //            SqlDataReader reader = cmd.ExecuteReader();
+                        bookedDates.Add(bD);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw;
+            }
 
-        //            while (reader.Read())
-        //            {
-        //                cmd.Parameters.AddWithValue("@spaceId", spaceId);
-        //              //  cmd.Parameters.AddWithValue("")
-        //            }
-        //        }
-        //    }
-        //    catch (SqlException ex)
-        //    {
-        //        Console.WriteLine("ERROR");
-        //        Console.WriteLine(ex.Message);
+            return bookedDates;
 
-        //    }
-
-        //  //  return venueSpaces;
-
-        //  //  for (DateTime i = firstDate; i <= lastDate; i.AddDays(1))
-        //    {
-        //        datesBooked.Add(i.ToString("yyyy mm dd"));
-        //    }
-        //    return datesBooked;
-
-        //}
+        }
 
         public Reservation ConvertReaderToReservation(SqlDataReader reader)
         {

@@ -27,7 +27,7 @@ namespace Capstone.Tests
         {
             //Arrange
             List<Venue> venuesList = new List<Venue>();
-            
+
 
             //Act
             try
@@ -45,7 +45,7 @@ namespace Capstone.Tests
                     }
                 }
             }
-            catch (SqlException ex) { }
+            catch (SqlException) { }
 
             //Assert
             Assert.IsNotNull(venuesList[0]);
@@ -54,24 +54,27 @@ namespace Capstone.Tests
 
 
         [TestMethod]
-    
+
         public void CanYouGetVenueInfoByID()
         {
             List<ListedVenue> venue = venueDAO.GetVenueInfoByID(6);
+            ListedVenue temp = new ListedVenue
+            {
+                VenueName = "Blue Nomad Outpost"
+            };
 
-            Assert.AreEqual()
+            Assert.AreEqual("Blue Nomad Outpost", temp.VenueName);
 
         }
 
+        [TestMethod]
+        public void Venue_Id_Validated()
+        {
+            int venueid = 25;
 
-        public string VenueName { get; set; }
+            bool result = venueDAO.IsVenueIDValid(venueid);
 
-        public string VenueDescription { get; set; }
-
-        public string CityName { get; set; }
-
-        public string StateName { get; set; }
-
-        public List<string> CategoryName { get; set; }
+            Assert.AreEqual(false, result);
+        }
     }
 }

@@ -9,6 +9,8 @@ namespace Capstone.DAL
     public class SpacesDAO //:ISpacesDAO
     {
         private string connectionString;
+
+        private string sqlLookForSpaceId = "SELECT COUNT(*) FROM space WHERE id = @id";
         public SpacesDAO(string connectionString)
         {
             this.connectionString = connectionString;
@@ -36,14 +38,40 @@ namespace Capstone.DAL
                     }
                 }
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                Console.WriteLine("ERROR");
-                Console.WriteLine(ex.Message);
+                throw;
 
             }
 
             return venueSpaces;
+        }
+
+        public bool IsSpaceIDValid(int spaceId)
+        {
+            bool valid = false;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlLookForSpaceId, conn);
+                    cmd.Parameters.AddWithValue("@id", spaceId);
+                    int doesItExist = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (doesItExist == 1)
+                    {
+                        valid = true;
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+
+            return valid;
         }
 
         public Space ConvertReaderToSpace(SqlDataReader reader)

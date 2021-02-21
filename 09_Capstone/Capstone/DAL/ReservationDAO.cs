@@ -14,7 +14,8 @@ namespace Capstone.DAL
             + " VALUES (@spaceid, @attendees, @startdate, @enddate, @reservedfor "
             + " SELECT SCOPE_IDENTITY();";
         private string sqlCheckBookedDates =
-            "SELECT start_date, end_date, space_id FROM reservation ";
+            "SELECT start_date, end_date, space_id FROM reservation "
+            + "WHERE space_id = @spaceid";
 
 
 

@@ -14,7 +14,8 @@ namespace Capstone.DAL
             + " VALUES (@spaceid, @attendees, @startdate, @enddate, @reservedfor "
             + " SELECT SCOPE_IDENTITY();";
         private string sqlCheckBookedDates =
-            "SELECT start_date, end_date, space_id FROM reservation ";
+            "SELECT start_date, end_date, space_id FROM reservation "
+            + "WHERE space_id = @spaceid";
 
 
 
@@ -34,10 +35,10 @@ namespace Capstone.DAL
 
                     SqlCommand cmd = new SqlCommand(sqlAddNewReservation, conn);
                     cmd.Parameters.AddWithValue("@spaceid", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@attendees", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@startdate", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@enddate", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@reservedfor", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@attendees", newReservation.NumberOfAttendees);
+                    cmd.Parameters.AddWithValue("@startdate", newReservation.StartDate);
+                    cmd.Parameters.AddWithValue("@enddate", newReservation.EndDate);
+                    cmd.Parameters.AddWithValue("@reservedfor", newReservation.ReservedFor);
 
                     reservationID = Convert.ToInt32(cmd.ExecuteScalar());
                 }
@@ -55,9 +56,9 @@ namespace Capstone.DAL
             };
         }
 
-        public List<Reservation> GetBookedDates(int spaceId)
+        public List<DateTime> GetBookedDates(int spaceId)
         {
-            List<Reservation> bookedDates = new List<Reservation>();
+            List<DateTime> bookedDates = new List<DateTime>();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -74,7 +75,7 @@ namespace Capstone.DAL
                         Reservation bD = new Reservation();
                         
                         bD.StartDate = Convert.ToDateTime(reader["start_date"]);
-                        bD.EndDate = Convert.ToDateTime(reader["end_date"]);
+                        bD.EndDate = Convert.ToDateTime (reader["end_date"]);
                        
 
                         bookedDates.Add(bD);
@@ -102,6 +103,22 @@ namespace Capstone.DAL
             reservation.ReservedFor = Convert.ToString(reader["reserved_for"]);
 
             return reservation;
+        }
+
+        public int GetCountOfReservations()
+        {
+            int counts = 0;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                //Create a new test department
+                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) from reservation", conn);
+                counts = (int)cmd.ExecuteScalar();
+            }
+
+            return counts;
         }
     }
 }

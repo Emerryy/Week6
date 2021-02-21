@@ -274,6 +274,10 @@ namespace Capstone
             buildingRes.EndDate = reserveDate.AddDays(reserveDays);
             buildingRes.ReservedFor = resName;
 
+
+            Reservation newReservation = new Reservation();
+            Reservation testres = resDAO.AddNewReservation(newReservation);
+
             return buildingRes;
         }
 
@@ -334,6 +338,13 @@ namespace Capstone
             DateTime endDate = reserveDate.AddDays(reserveDays);
             IList<Space> matchSpaces = new List<Space>();
 
+            Space space2 = new Space();
+
+            List<DateTime> needed = DatesNeededForSpace(reserveDate, reserveDays);
+            CompareDatesNeededToExistingRes(space2.Id, needed);
+
+
+
             int endMonth = endDate.Month;
             int startMonth = reserveDate.Month;
 
@@ -364,31 +375,12 @@ namespace Capstone
 
             List<DateTime> datesNeeded = new List<DateTime>();
 
-            for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            for (DateTime i = reserveDate; i <= lastDate; i = i.AddDays(1))
             {
                 datesNeeded.Add(i);
             }
             return datesNeeded;
         }
 
-        //public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
-        //{
-        //    Reservation res = new Reservation();
-        //    List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
-
-        //    foreach (DateTime dateTime in datesNeeded)
-        //    {
-        //        if (datesBooked.Contains(dateTime))
-        //        {
-        //            Console.WriteLine("Sorry, that space isn't available for your requested dates.");
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("That space is available!");
-        //        }
-        //    }
-
-        //}
     }
 }
-

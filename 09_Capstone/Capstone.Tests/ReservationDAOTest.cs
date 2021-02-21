@@ -59,10 +59,10 @@ namespace Capstone.Tests
         {
             DateTime first = DateTime.Today;
             DateTime last = first.AddDays(2);
-            int originalCount = GetCountOfReservations();
+            int originalCount = Get_Count_Of_Reservations();
             Reservation newRes = new Reservation
             {
-                //ReservationId = originalCount + 1,
+                ReservationId = originalCount + 1,
                 SpaceId = 1,
                 NumberOfAttendees = 5,
                 StartDate = first,
@@ -76,12 +76,22 @@ namespace Capstone.Tests
 
             string result = res.ReservedFor; 
             Assert.AreEqual(result, "Jimmy Hoffa");
-            Assert.AreEqual(originalCount + 1, GetCountOfReservations());
+            Assert.AreEqual(originalCount + 1, Get_Count_Of_Reservations());
         }
 
-        private int GetCountOfReservations()
+        public int Get_Count_Of_Reservations()
         {
-            throw new NotImplementedException();
+            int counts = 0;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) from reservation", conn);
+                counts = (int)cmd.ExecuteScalar();
+            }
+
+            return counts;
         }
     }
 }

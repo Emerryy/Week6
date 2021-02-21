@@ -105,20 +105,6 @@ namespace Capstone.DAL
             return reservation;
         }
 
-        public int GetCountOfReservations()
-        {
-            int counts = 0;
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-
-                //Create a new test department
-                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) from reservation", conn);
-                counts = (int)cmd.ExecuteScalar();
-            }
-
-            return counts;
-        }
+     
     }
 }

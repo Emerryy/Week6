@@ -258,11 +258,6 @@ namespace Capstone
             int endMonth = endDate.Month;
             int startMonth = reserveDate.Month;
 
-          
-            //IList<Reservation> existRes = resDAO.CheckExistingReservations();
-            //foreach (Reservation res in existRes)
-            //{
-            //}
 
             foreach (Space space in spacesList)
             {
@@ -306,7 +301,7 @@ namespace Capstone
             {
                 if (datesNeeded.Contains(dateTime))
                 {
-                    (Console.WriteLine("Sorry, that space isn't available for your requested dates.");
+                    Console.WriteLine("Sorry, that space isn't available for your requested dates.");
                 }
                 else
                 {

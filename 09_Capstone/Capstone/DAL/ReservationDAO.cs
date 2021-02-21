@@ -74,7 +74,7 @@ namespace Capstone.DAL
                         Reservation bD = new Reservation();
                         
                         bD.StartDate = Convert.ToDateTime(reader["start_date"]);
-                        bD.EndDate = Convert.ToDateTime (reader["end_date"]);
+                        bD.EndDate = Convert.ToDateTime(reader["end_date"]);
                        
 
                         bookedDates.Add(bD);

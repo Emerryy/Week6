@@ -30,68 +30,121 @@ namespace Capstone
             bool done = false;
             while (!done)
             {
-                string result = DisplayMainMenu();
-
-                switch (result.ToLower())
-                {
-                    case "1":
-                        int venueId = ListVenuesGetId();
-                        ListVenueById(venueId);
-                        string viewOrReserveMenuInput = PrintViewOrReserveChoices();
-                        ViewOrReserveSpaceMenu(viewOrReserveMenuInput, venueId);
-                        break;
-                    case "q":
-                        Console.WriteLine("Thanks!");
-                        done = true;
-                        break;
-
-                    default:
-                        Console.WriteLine("Please make a valid selection.");
-                        break;
-                }
+                done = RunMainMenu();
             }
-            return;
         }
-        public string DisplayMainMenu()
+
+        public bool RunMainMenu()
         {
-            Console.WriteLine("Welcome to Exscelsior Venues!");
+            string result = PrintMainMenu();
+            bool done = false;
+            switch (result.ToLower())
+            {
+                case "1":
+                    RunListVenuesMenu();
+                    //ViewOrReserveSpaceMenu(viewOrReserveMenuInput, venueId);
+                    break;
+                case "q":
+                    Console.WriteLine("Thanks!");
+                    done = true;
+                    break;
+                default:
+                    Console.WriteLine("Please make a valid selection.");
+                    break;
+            }
+            return done;
+        }
+
+        public string PrintMainMenu()
+        {
+            Console.WriteLine("Welcome to Excelsior Venues!");
             Console.WriteLine("1) List Venues");
             Console.WriteLine("Q) Quit");
             return Console.ReadLine();
         }
 
-        public int ListVenuesGetId()
+        public void RunListVenuesMenu()
         {
-            IList<Venue> venues = venueDAO.GetVenuesInAlphaOrder();
-
-            foreach (Venue item in venues)
-            {
-                Console.WriteLine($"{item.Name}".PadRight(35) + $" Venue ID- {item.ID}".PadRight(4));
-            }
-            Console.WriteLine();
-            Console.WriteLine("Please input the venue ID you'd like to view");
-            string venueIdInput = Console.ReadLine();
-            int intVenueId = 0;
             bool done = false;
             while (!done)
             {
-                if (!int.TryParse(venueIdInput, out intVenueId) || !venueDAO.IsVenueIDValid(intVenueId))
-                {
-                    Console.WriteLine("Please enter a valid venue ID.");
-                    venueIdInput = Console.ReadLine();
-                }
-                else
+                PrintListVenuesMenu();
+                string input = Console.ReadLine();
+                int venueId;
+                if (input.ToLower() == "r")
                 {
                     done = true;
                 }
+                else if (!int.TryParse(input, out venueId) || !venueDAO.IsVenueIDValid(venueId))
+                {
+                    Console.Write("Please enter a valid venue ID, or R to go back: ");
+                    input = Console.ReadLine();
+                }
+                else
+                {
+                    RunVenueDetailsMenu(venueId);
+                }
             }
-            return intVenueId;
         }
 
-        public void ListVenueById(int venueId)
+        public void PrintListVenuesMenu()
         {
-            List<ListedVenue> venues = venueDAO.GetVenueInfoByID(venueId);
-            ListedVenue venueWithCategories = venues[venues.Count - 1];
+            Console.WriteLine("Which venue would you like to view?");
+            PrintVenues();
+            Console.WriteLine("R) Return to Previous Screen");
+            Console.WriteLine();
+            Console.Write("Enter venue ID, or R to return to previous screen: ");
+        }
+
+        public void PrintVenues()
+        {
+            IList<Venue> venues = venueDAO.GetVenuesInAlphaOrder();
+            foreach (Venue venue in venues)
+            {
+                Console.WriteLine($"{venue.Name}".PadRight(35) + $" Venue ID- {venue.ID}".PadRight(4));
+            }
+        }
+
+        public bool RunVenueDetailsMenu(int venueId)
+        {
+            bool done = false;
+            while (!done)
+            {
+                PrintVenueDetails(venueId);
+                string input = PrintViewOrReserveChoices();
+                switch (input.ToLower())
+                {
+                    //probably model, Loosely, from ViewOrReserveSpaceMenu
+                    case "1":
+                        RunViewSpacesMenu(venueId);
+                        break;
+                    case "2":
+                        //search for reservation
+                        break;
+                    case "r":
+                        done = true;
+                        break;
+                    default:
+                        Console.Write("Please make a valid selection: ");
+                        input = PrintViewOrReserveChoices();
+                        break;
+                }
+            }
+            return done;
+        }
+
+        public void PrintVenueDetails(int venueId) //todo better SQL for venues w/o categories
+        {
+            List<ListedVenue> venueRows = venueDAO.GetVenueInfoByID(venueId);
+            ListedVenue venueWithCategories;
+            if (venueRows.Count == 0)
+            {
+                venueWithCategories = venueRows[1];
+            }
+            else
+            {
+                venueWithCategories = venueRows[venueRows.Count - 1];
+            }
 
             Console.WriteLine();
             Console.WriteLine($"{venueWithCategories.VenueName}");
@@ -123,30 +176,56 @@ namespace Capstone
             return Console.ReadLine();
         }
 
-        public void ViewOrReserveSpaceMenu(string viewOrReserveMenuInput, int venueId)
+        public void RunViewSpacesMenu(int venueId)
         {
+            string input = PrintSpaces(venueId);
             bool done = false;
             while (!done)
             {
-                switch (viewOrReserveMenuInput.ToLower())
+                switch (input.ToLower())
                 {
                     case "1":
-                        string spaceInfoInput = PrintSpaceInfo(venueId);
-                        break;
-                    case "2":
-                        Reservation addedReservation = MakeReservation(venueId);
+                        RunMakeReservationMenu(venueId);
                         break;
                     case "r":
-                        Console.WriteLine("Returning to previous page..");
                         done = true;
                         break;
                     default:
-                        Console.WriteLine("Please choose a valid option.");
-                        PrintViewOrReserveChoices();
+                        Console.WriteLine("Please make a valid selection, runviewspacesmenu.");
+                        input = PrintSpaces(venueId);
                         break;
                 }
             }
         }
+
+        public void RunMakeReservationMenu(int venueId)
+        {
+            Reservation addedReservation = MakeReservation(venueId);
+        }
+        //public void ViewOrReserveSpaceMenu(string viewOrReserveMenuInput, int venueId)
+        //{
+        //    bool done = false;
+        //    while (!done)
+        //    {
+        //        switch (viewOrReserveMenuInput.ToLower())
+        //        {
+        //            case "1":
+        //                string spaceInfoInput = PrintSpaceInfo(venueId);
+        //                break;
+        //            case "2":
+        //                Reservation addedReservation = MakeReservation(venueId);
+        //                break;
+        //            case "r":
+        //                Console.WriteLine("Returning to previous page..");
+        //                done = true;
+        //                break;
+        //            default:
+        //                Console.WriteLine("Please choose a valid option.");
+        //                PrintViewOrReserveChoices();
+        //                break;
+        //        }
+        //    }
+        //}
 
         public Reservation MakeReservation(int venueId)
         {
@@ -199,7 +278,7 @@ namespace Capstone
         }
 
 
-        public string PrintSpaceInfo(int venueId)
+        public string PrintSpaces(int venueId)
         {
             IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
 
@@ -292,23 +371,24 @@ namespace Capstone
             return datesNeeded;
         }
 
-        public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
-        {
-            Reservation res = new Reservation();
-            List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
-           
-            foreach (DateTime dateTime in datesNeeded)
-            {
-                if (datesNeeded.Contains(dateTime))
-                {
-                    Console.WriteLine("Sorry, that space isn't available for your requested dates.");
-                }
-                else
-                {
-                    Console.WriteLine("That space is available!");
-                }
-            }
+        //public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
+        //{
+        //    Reservation res = new Reservation();
+        //    List<Reservation> datesBooked = resDAO.GetBookedDates(spaceId);
 
-        }
+        //    foreach (DateTime dateTime in datesNeeded)
+        //    {
+        //        if (datesBooked.Contains(dateTime))
+        //        {
+        //            Console.WriteLine("Sorry, that space isn't available for your requested dates.");
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("That space is available!");
+        //        }
+        //    }
+
+        //}
     }
 }
+

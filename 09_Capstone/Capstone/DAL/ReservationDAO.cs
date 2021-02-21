@@ -73,7 +73,8 @@ namespace Capstone.DAL
                 ReservedFor = newReservation.ReservedFor,
                 VenueName = venueName,
                 SpaceName = spaceName,
-                DailyRate = dailyRate
+                DailyRate = dailyRate,
+                NumberOfDaysReserved = newReservation.NumberOfDaysReserved
             };
         }
 

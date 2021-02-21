@@ -11,6 +11,8 @@ namespace Capstone.DAL
         private string connectionString;
 
         private string sqlLookForSpaceId = "SELECT COUNT(*) FROM space WHERE id = @id";
+
+        private string sqlCheckSpaceOccupancy = " SELECT max_occupancy FROM space WHERE id = @id ";
         public SpacesDAO(string connectionString)
         {
             this.connectionString = connectionString;
@@ -27,6 +29,37 @@ namespace Capstone.DAL
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand("SELECT * FROM space WHERE venue_id = @venueId ORDER BY id ASC;", conn);
+                    cmd.Parameters.AddWithValue("@venueId", venueId);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Space space = ConvertReaderToSpace(reader);
+                        venueSpaces.Add(space);
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+
+            }
+
+            return venueSpaces;
+        }
+
+        public List<Space> GetTop5SpacesInfoFromVenueId(int venueId)
+        {
+            List<Space> venueSpaces = new List<Space>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT TOP 5 * FROM space WHERE venue_id = @venueId ORDER BY id ASC;", conn);
                     cmd.Parameters.AddWithValue("@venueId", venueId);
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -72,6 +105,34 @@ namespace Capstone.DAL
             }
 
             return valid;
+        }
+
+        public bool DoesSpaceHaveOccupancy(int guests, int spaceId)
+        {
+            bool doesIt = false;
+            int maxOccupancy = 0;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand(sqlCheckSpaceOccupancy, conn);
+                    cmd.Parameters.AddWithValue("@id", spaceId);
+
+                    maxOccupancy = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+            if (maxOccupancy >= guests)
+            {
+                doesIt = true;
+            }
+
+            return doesIt;
         }
 
         public Space ConvertReaderToSpace(SqlDataReader reader)

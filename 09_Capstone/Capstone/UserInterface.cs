@@ -120,7 +120,7 @@ namespace Capstone
                         done = true;
                         break;
                     case "2":
-                        MakeReservation(venueId);
+                        RunMakeReservationMenu(venueId);
                         done = true;
                         break;
                     case "r":
@@ -206,21 +206,22 @@ namespace Capstone
             Reservation addedReservation = MakeReservation(venueId);
             if (addedReservation.SpaceId != -1)
             {
-                Console.WriteLine("Thanks for submitting your reservation! The details for your event are listed below:");
-                Console.WriteLine();
-                Console.WriteLine("Confirmation #: ".PadLeft(20) + addedReservation.ReservationId);
-                Console.WriteLine("Venue: ".PadLeft(20) + addedReservation.VenueName);
-                Console.WriteLine("Space: ".PadLeft(20) + addedReservation.SpaceName);
-                Console.WriteLine("Reserved For: ".PadLeft(20) + addedReservation.ReservedFor);
-                Console.WriteLine("Attendees: ".PadLeft(20) + addedReservation.NumberOfAttendees);
-                Console.WriteLine("Arrival Date: ".PadLeft(20) + addedReservation.StartDate);
-                Console.WriteLine("Depart Date: ".PadLeft(20) + addedReservation.EndDate);
-                Console.WriteLine("Total Cost: ".PadLeft(20) + addedReservation.DailyRate * addedReservation.NumberOfDaysReserved);
+                PrintConfirmation(addedReservation);
             }
-            else
-            {
-                Console.WriteLine("Failed to reserve, please try again.");
-            }
+        }
+
+        public void PrintConfirmation(Reservation addedReservation)
+        {
+            Console.WriteLine("Thanks for submitting your reservation! The details for your event are listed below:");
+            Console.WriteLine();
+            Console.WriteLine("Confirmation #: ".PadLeft(20) + addedReservation.ReservationId);
+            Console.WriteLine("Venue: ".PadLeft(20) + addedReservation.VenueName);
+            Console.WriteLine("Space: ".PadLeft(20) + addedReservation.SpaceName);
+            Console.WriteLine("Reserved For: ".PadLeft(20) + addedReservation.ReservedFor);
+            Console.WriteLine("Attendees: ".PadLeft(20) + addedReservation.NumberOfAttendees);
+            Console.WriteLine("Arrival Date: ".PadLeft(20) + addedReservation.StartDate);
+            Console.WriteLine("Depart Date: ".PadLeft(20) + addedReservation.EndDate);
+            Console.WriteLine("Total Cost: ".PadLeft(20) + (addedReservation.DailyRate * addedReservation.NumberOfDaysReserved));
         }
 
         public Reservation MakeReservation(int venueId)
@@ -234,10 +235,12 @@ namespace Capstone
                 int reserveGuests = ReserveASpaceAttendees();
                 IList<Space> availableSpaces = ListAvailableSpaces(venueId, reserveDate, reserveDays, reserveGuests);
                 int spaceId = GetSpaceIdForReservation();
-                if (spaceId == 0)
+                if (spaceId == 0 || !AreRequestedDaysAvailable(spaceId, reserveDate, reserveDays) || !spaceDAO.DoesSpaceHaveOccupancy(reserveGuests, spaceId))
                 {
                     done = true;
                     finalReservation.SpaceId = -1;
+                    Console.WriteLine("Reservation cancelled.");
+                    Console.WriteLine();
                 }
                 else
                 {
@@ -271,10 +274,14 @@ namespace Capstone
             int spaceId = 0;
             while (!done)
             {
-                Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");             //todo validate
+                Console.WriteLine("Which space would you like to reserve? Enter 0 to cancel. ");
                 string input = Console.ReadLine();
                 bool succeeded = int.TryParse(input, out spaceId);
-                if (!succeeded || !spaceDAO.IsSpaceIDValid(spaceId))
+                if (spaceId == 0)
+                {
+                    done = true;
+                }
+                else if (!succeeded || !spaceDAO.IsSpaceIDValid(spaceId))
                 {
                     Console.WriteLine("Please enter a valid space ID#.");
                 }
@@ -357,6 +364,7 @@ namespace Capstone
 
         public DateTime ReserveASpaceTime()
         {
+            Console.WriteLine();
             Console.Write("When do you need the space? Please use a MM/DD/YYYY format ");
             DateTime firstDay = DateTime.Parse(Console.ReadLine());
 
@@ -407,7 +415,7 @@ namespace Capstone
 
         public IList<Space> CheckAndReturnAvailSpaces(int venueId, DateTime reserveDate, int reserveDays, int reserveGuests)
         {
-            IList<Space> spacesList = spaceDAO.GetSpacesInfoFromVenueId(venueId);
+            IList<Space> spacesList = spaceDAO.GetTop5SpacesInfoFromVenueId(venueId);
             DateTime endDate = reserveDate.AddDays(reserveDays);
             IList<Space> matchSpaces = new List<Space>();
 
@@ -417,11 +425,11 @@ namespace Capstone
 
             foreach (Space space in spacesList)
             {
-                if (space.OpenFrom == -1 && reserveGuests <= space.MaxOccupancy && CompareDatesNeededToExistingRes(space.Id, reserveDate, reserveDays))
+                if (space.OpenFrom == -1 && reserveGuests <= space.MaxOccupancy && AreRequestedDaysAvailable(space.Id, reserveDate, reserveDays))
                 {
                     matchSpaces.Add(space);
                 }
-                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && reserveGuests <= space.MaxOccupancy && CompareDatesNeededToExistingRes(space.Id, reserveDate, reserveDays))
+                else if (startMonth >= space.OpenFrom && startMonth <= space.OpenTo && endMonth >= space.OpenFrom && endMonth <= space.OpenTo && reserveGuests <= space.MaxOccupancy && AreRequestedDaysAvailable(space.Id, reserveDate, reserveDays))
                 {
                     matchSpaces.Add(space);
                 }
@@ -429,7 +437,7 @@ namespace Capstone
             return matchSpaces;
         }
 
-        public bool CompareDatesNeededToExistingRes(int spaceId, DateTime reserveDate, int reserveDays)
+        public bool AreRequestedDaysAvailable(int spaceId, DateTime reserveDate, int reserveDays)
         {
             bool success = false;
             DateTime lastDate = reserveDate.AddDays(reserveDays);
@@ -443,6 +451,6 @@ namespace Capstone
                 }
             }
             return success;
-        } //todo implement
+        } 
     }
 }

@@ -52,7 +52,7 @@ namespace Capstone.Tests
                     }
                 }
             }
-            catch (SqlException ex) { }
+            catch (SqlException) { }
 
             //Assert
             Assert.IsNotNull(spaceList[0]);
@@ -82,7 +82,7 @@ namespace Capstone.Tests
                     }
                 }
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
 
                 //Assert
@@ -91,6 +91,14 @@ namespace Capstone.Tests
             }
         }
 
-        //[TestMethod]
+        [TestMethod]
+        public void Space_Id_Validated()
+        {
+            int spaceid = 250;
+
+            bool result = venueDAO.IsVenueIDValid(spaceid);
+
+            Assert.AreEqual(false, result);
+        }
     }
 }

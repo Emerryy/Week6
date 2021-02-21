@@ -47,7 +47,7 @@ namespace Capstone.Tests
                     }
                 }
             }
-            catch (SqlException ex) { }
+            catch (SqlException) { }
 
             //Assert
             Assert.IsNotNull(resList[0]);
@@ -62,7 +62,7 @@ namespace Capstone.Tests
             int originalCount = Get_Count_Of_Reservations();
             Reservation newRes = new Reservation
             {
-                ReservationId = originalCount + 1,
+                //ReservationId = originalCount + 1,
                 SpaceId = 1,
                 NumberOfAttendees = 5,
                 StartDate = first,
@@ -93,5 +93,16 @@ namespace Capstone.Tests
 
             return counts;
         }
+        [TestMethod]
+        public void Checking_Booked_Dates()
+        {
+            int tempSpace = 24;
+
+            List<DateTime> dates = resDAO.GetBookedDates(tempSpace);
+
+            Assert.IsTrue(dates.Count > 0);
+            Assert.IsTrue(dates[1] != dates[2]);
+        }
+
     }
 }

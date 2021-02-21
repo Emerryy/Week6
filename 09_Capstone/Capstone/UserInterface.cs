@@ -382,26 +382,15 @@ namespace Capstone
             return matchSpaces;
         }
 
-        public List<DateTime> DatesNeededForSpace(DateTime reserveDate, int reserveDays)
+
+        public void CompareDatesNeededToExistingRes(int spaceId, DateTime reserveDate, int reserveDays)
         {
             DateTime lastDate = reserveDate.AddDays(reserveDays);
-
-            List<DateTime> datesNeeded = new List<DateTime>();
-
-            for (DateTime i = reserveDate; i <= lastDate; i = i.AddDays(1))
-            {
-                datesNeeded.Add(i);
-            }
-            return datesNeeded;
-        }
-
-        public void CompareDatesNeededToExistingRes(int spaceId, List<DateTime> datesNeeded)
-        {
             List<DateTime> datesBooked = resDAO.GetBookedDates(spaceId);
 
-            foreach (DateTime dateTime in datesNeeded)
+            foreach (DateTime dateTime in datesBooked)
             {
-                if (datesBooked.Contains(dateTime))
+                if (datesBooked.Contains(reserveDate) || datesBooked.Contains(lastDate))
                 {
                     Console.WriteLine("Sorry, that space isn't available for your requested dates.");
                 }

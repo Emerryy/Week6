@@ -195,6 +195,10 @@ namespace Capstone
             buildingRes.EndDate = reserveDate.AddDays(reserveDays);
             buildingRes.ReservedFor = resName;
 
+
+            Reservation newReservation = new Reservation();
+            Reservation testres = resDAO.AddNewReservation(newReservation);
+
             return buildingRes;
         }
 
@@ -255,6 +259,13 @@ namespace Capstone
             DateTime endDate = reserveDate.AddDays(reserveDays);
             IList<Space> matchSpaces = new List<Space>();
 
+            Space space2 = new Space();
+
+            List<DateTime> needed = DatesNeededForSpace(reserveDate, reserveDays);
+            CompareDatesNeededToExistingRes(space2.Id, needed);
+
+
+
             int endMonth = endDate.Month;
             int startMonth = reserveDate.Month;
 
@@ -285,7 +296,7 @@ namespace Capstone
 
             List<DateTime> datesNeeded = new List<DateTime>();
 
-            for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            for (DateTime i = reserveDate; i <= lastDate; i = i.AddDays(1))
             {
                 datesNeeded.Add(i);
             }
@@ -297,7 +308,7 @@ namespace Capstone
             Reservation res = new Reservation();
             List<DateTime> datesBooked = resDAO.GetBookedDates(spaceId);
 
-            for (DateTime i = res.StartDate; i <= res.EndDate; i.AddDays(1))
+            for (DateTime i = res.StartDate; i <= res.EndDate; i = i.AddDays(1))
             {
                 datesBooked.Add(i);
             }

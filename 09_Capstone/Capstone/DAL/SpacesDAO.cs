@@ -46,7 +46,7 @@ namespace Capstone.DAL
             return venueSpaces;
         }
 
-        private Space ConvertReaderToSpace(SqlDataReader reader)
+        public Space ConvertReaderToSpace(SqlDataReader reader)
         {
             Space space = new Space();
 

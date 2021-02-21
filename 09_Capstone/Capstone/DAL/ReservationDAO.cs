@@ -35,10 +35,10 @@ namespace Capstone.DAL
 
                     SqlCommand cmd = new SqlCommand(sqlAddNewReservation, conn);
                     cmd.Parameters.AddWithValue("@spaceid", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@attendees", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@startdate", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@enddate", newReservation.SpaceId);
-                    cmd.Parameters.AddWithValue("@reservedfor", newReservation.SpaceId);
+                    cmd.Parameters.AddWithValue("@attendees", newReservation.NumberOfAttendees);
+                    cmd.Parameters.AddWithValue("@startdate", newReservation.StartDate);
+                    cmd.Parameters.AddWithValue("@enddate", newReservation.EndDate);
+                    cmd.Parameters.AddWithValue("@reservedfor", newReservation.ReservedFor);
 
                     reservationID = Convert.ToInt32(cmd.ExecuteScalar());
                 }
@@ -100,6 +100,22 @@ namespace Capstone.DAL
             reservation.ReservedFor = Convert.ToString(reader["reserved_for"]);
 
             return reservation;
+        }
+
+        public int GetCountOfReservations()
+        {
+            int counts = 0;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                //Create a new test department
+                SqlCommand cmd = new SqlCommand("SELECT COUNT(*) from reservation", conn);
+                counts = (int)cmd.ExecuteScalar();
+            }
+
+            return counts;
         }
     }
 }

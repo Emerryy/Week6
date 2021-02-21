@@ -364,7 +364,7 @@ namespace Capstone
 
             List<DateTime> datesNeeded = new List<DateTime>();
 
-            for (DateTime i = reserveDate; i <= lastDate; i.AddDays(1))
+            for (DateTime i = reserveDate; i <= lastDate; i = i.AddDays(1))
             {
                 datesNeeded.Add(i);
             }

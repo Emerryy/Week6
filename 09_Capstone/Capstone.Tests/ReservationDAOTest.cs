@@ -62,7 +62,7 @@ namespace Capstone.Tests
             int originalCount = Get_Count_Of_Reservations();
             Reservation newRes = new Reservation
             {
-                ReservationId = originalCount + 1,
+                //ReservationId = originalCount + 1,
                 SpaceId = 1,
                 NumberOfAttendees = 5,
                 StartDate = first,

@@ -57,8 +57,21 @@ namespace Capstone.Tests
     
         public void CanYouGetVenueInfoByID()
         {
-            //List<Venue> venueinfo = venueDAO.GetVenueInfoByID(6);
+            List<ListedVenue> venue = venueDAO.GetVenueInfoByID(6);
+
+            Assert.AreEqual()
 
         }
+
+
+        public string VenueName { get; set; }
+
+        public string VenueDescription { get; set; }
+
+        public string CityName { get; set; }
+
+        public string StateName { get; set; }
+
+        public List<string> CategoryName { get; set; }
     }
 }
